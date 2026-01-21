@@ -1,4 +1,4 @@
-#' Configure Provider
+#' Add a Provider to be Used
 #'
 #' Set API keys for running models locally.
 #'
@@ -8,22 +8,22 @@
 #'
 #' @examples
 #' \dontrun{
-#' configure_provider("google_gemini", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-#' configure_provider(
-#'   "anthropic",
-#'   "sk-ant-api03-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-#' )
+#' # Configure providers.
+#' configure_provider("anthropic", Sys.getenv("ANTHROPIC_API_KEY"))
+#' configure_provider("google_gemini", Sys.getenv("GEMINI_API_KEY"))
+#' configure_provider("openai", Sys.getenv("OPENAI_API_KEY"))
+#' # Delete the provider for google_gemini.
 #' configure_provider("google_gemini", NULL)
 #' }
 #'
-#' @importFrom ellmer models_anthropic models_google_gemini
+#' @importFrom ellmer models_anthropic models_google_gemini models_openai
 #' @importFrom jsonlite fromJSON toJSON
 #'
 #' @export
 #'
 configure_provider <- function(name, api_key) {
-  if (!name %in% c("anthropic", "google_gemini")) {
-    stop('`name` must be one of "anthropic" or "google_gemini".')
+  if (!name %in% c("anthropic", "google_gemini", "openai")) {
+    stop('`name` must be one of "anthropic", "google_gemini", or "openai".')
   }
   # Load the already configured providers.
   api_keys <- get_config("api_keys")
@@ -34,13 +34,15 @@ configure_provider <- function(name, api_key) {
     if (name %in% names(api_keys)) {
       api_keys <- api_keys[names(api_keys) != name]
     }
-  } else if (name == "anthropic") {
-    # Check if the API key works.
-    models <- try(models_anthropic(api_key = api_key), silent = TRUE)
-    api_keys[[name]] <- api_key
-  } else if (name == "google_gemini") {
-    # Check if the API key works.
-    models <- try(models_google_gemini(api_key = api_key), silent = TRUE)
+  } else {
+    if (name == "anthropic") {
+      # Check if the API key works.
+      models <- try(models_anthropic(api_key = api_key), silent = TRUE)
+    } else if (name == "google_gemini") {
+      models <- try(models_google_gemini(credentials = function() api_key), silent = TRUE)
+    } else if (name == "openai") {
+      models <- try(models_openai(credentials = function() api_key), silent = TRUE)
+    }
     api_keys[[name]] <- api_key
   }
   if (inherits(models, "try-error")) stop("The provided `api_key` is not working.")

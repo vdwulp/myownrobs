@@ -42,7 +42,7 @@ save_turns <- function(value) {
 #'
 turns_to_ui <- function(turns) {
   ui <- rev(unlist(lapply(turns, function(turn) {
-    lapply(attr(turn, "contents"), function(content) content_to_ui(content, attr(turn, "role")))
+    lapply(turn@contents, function(content) content_to_ui(content, turn@role))
   }), recursive = FALSE))
   # Remove non-UI elements.
   ui <- ui[!sapply(ui, function(x) is.null(unlist(x$text)))]
@@ -60,16 +60,16 @@ turns_to_ui <- function(turns) {
 #'
 content_to_ui <- function(content, role) {
   if (is(content, "ellmer::ContentText")) {
-    list(role = role, text = attr(content, "text"))
+    list(role = role, text = content@text)
   } else if (is(content, "ellmer::ContentToolRequest")) {
     arguments <- ""
-    if (length(attr(content, "arguments")) > 0) {
+    if (length(content@arguments) > 0) {
       arguments <- paste0(
-        names(attr(content, "arguments")), ' = "', attr(content, "arguments"), '"',
+        names(content@arguments), ' = "', content@arguments, '"',
         collapse = ", "
       )
     }
-    res <- paste0(attr(content, "name"), "(", arguments, ")")
+    res <- paste0(content@name, "(", arguments, ")")
     if (nchar(res) > 100) {
       res <- paste0(substr(res, 1, 97), "...")
     }

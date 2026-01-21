@@ -4,12 +4,7 @@
 \alias{validate_credentials}
 \title{Validate MyOwnRobs Credentials}
 \usage{
-validate_credentials(api_url, force = FALSE)
-}
-\arguments{
-\item{api_url}{The API URL to use for requests.}
-
-\item{force}{Force validation altough there's an existing key.}
+validate_credentials()
 }
 \description{
 Validate MyOwnRobs Credentials

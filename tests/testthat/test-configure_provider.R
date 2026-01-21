@@ -124,3 +124,55 @@ test_that("configure_provider - google_gemini - delete key", {
   )
   expect_equal(configure_provider("google_gemini", NULL), list(provider = "FAKE_KEY"))
 })
+
+### openai
+
+test_that("configure_provider - openai - add key", {
+  local_mocked_bindings(
+    get_config = function(...) NULL,
+    set_config = function(...) NULL,
+    models_openai = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(configure_provider("openai", "OA_KEY"), list(openai = "OA_KEY"))
+})
+
+test_that("configure_provider - openai - add key to non-empty keys", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY"}',
+    set_config = function(...) NULL,
+    models_openai = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(
+    configure_provider("openai", "OA_KEY"),
+    list(provider = "FAKE_KEY", openai = "OA_KEY")
+  )
+})
+
+test_that("configure_provider - openai - update key", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY","openai":"OLD_KEY"}',
+    set_config = function(...) NULL,
+    models_openai = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(
+    configure_provider("openai", "OA_KEY"),
+    list(provider = "FAKE_KEY", openai = "OA_KEY")
+  )
+  expect_equal(
+    configure_provider("openai", "OA_KEY2"),
+    list(provider = "FAKE_KEY", openai = "OA_KEY2")
+  )
+})
+
+test_that("configure_provider - openai - delete key", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY","openai":"OLD_KEY"}',
+    set_config = function(...) NULL,
+    models_openai = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(configure_provider("openai", NULL), list(provider = "FAKE_KEY"))
+})

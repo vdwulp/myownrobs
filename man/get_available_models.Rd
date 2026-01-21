@@ -4,10 +4,7 @@
 \alias{get_available_models}
 \title{Return the Available Models}
 \usage{
-get_available_models(api_url)
-}
-\arguments{
-\item{api_url}{The API URL to use for requests.}
+get_available_models()
 }
 \description{
 Return the Available Models

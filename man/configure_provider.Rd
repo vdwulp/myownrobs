@@ -2,7 +2,7 @@
 % Please edit documentation in R/configure_provider.R
 \name{configure_provider}
 \alias{configure_provider}
-\title{Configure Provider}
+\title{Add a Provider to be Used}
 \usage{
 configure_provider(name, api_key)
 }
@@ -17,11 +17,11 @@ Set API keys for running models locally.
 }
 \examples{
 \dontrun{
-configure_provider("google_gemini", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-configure_provider(
-  "anthropic",
-  "sk-ant-api03-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-)
+# Configure providers.
+configure_provider("anthropic", Sys.getenv("ANTHROPIC_API_KEY"))
+configure_provider("google_gemini", Sys.getenv("GEMINI_API_KEY"))
+configure_provider("openai", Sys.getenv("OPENAI_API_KEY"))
+# Delete the provider for google_gemini.
 configure_provider("google_gemini", NULL)
 }
 

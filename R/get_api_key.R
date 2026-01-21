@@ -10,8 +10,7 @@ get_api_key <- function() {
   api_keys <- get_config("api_keys")
   if (!is.null(api_keys)) {
     api_keys <- fromJSON(api_keys)
+    api_keys <- api_keys[order(names(api_keys))]
   }
-  # Retrieve the 'api_key' from the '.state' environment.
-  api_keys$myownrobs <- get("api_key", envir = .state)
   api_keys
 }

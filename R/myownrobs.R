@@ -2,9 +2,6 @@
 #'
 #' Open the RStudio addin with the chat interface.
 #'
-#' @param api_url The API URL to use for requests. This parameter is for advanced users who want to
-#'   specify an alternative backend URL and is rarely needed.
-#'
 #' @return No return value. Called for its side effects to launch the MyOwnRobs RStudio addin.
 #'
 #' @examples
@@ -19,17 +16,16 @@
 #'
 #' @export
 #'
-myownrobs <- function(api_url =
-                        paste0("https://myownrobs.com/api/v", packageVersion("myownrobs")$major)) {
+myownrobs <- function() {
   if (!validate_policy_acceptance()) {
     return("Accept MyOwnRobs terms of use in order to run it")
   }
-  validate_credentials(api_url)
-  available_models <- get_available_models(api_url)
+  validate_credentials()
+  available_models <- get_available_models()
   project_context <- get_project_context()
   runGadget(
     myownrobs_ui(available_models),
-    myownrobs_server(api_url, available_models, project_context)
+    myownrobs_server(available_models, project_context)
   )
   invisible()
 }
@@ -146,7 +142,6 @@ myownrobs_ui <- function(available_models) {
 
 #' MyOwnRobs Shiny Server
 #'
-#' @param api_url The API URL to use for requests.
 #' @param available_models List of available models to use, obtained with `get_available_models()`.
 #' @param project_context The context of the session executing the addin, obtained with
 #'   `get_project_context()`.
@@ -159,7 +154,7 @@ myownrobs_ui <- function(available_models) {
 #'
 #' @keywords internal
 #'
-myownrobs_server <- function(api_url, available_models, project_context) {
+myownrobs_server <- function(available_models, project_context) {
   function(input, output, session) {
     # App reactive values to manage chat state.
     # Stores the list of chat messages (user and assistant).
@@ -199,7 +194,7 @@ myownrobs_server <- function(api_url, available_models, project_context) {
       # Immediately show user message and working state.
       r_messages(c(list(list(role = "user", text = prompt_text)), r_messages()))
       chat_instance <- get_chat_instance(
-        input$ai_mode, input$ai_model, project_context, api_url, get_api_key(), available_models
+        input$ai_mode, input$ai_model, project_context, get_api_key(), available_models
       )
       r_finished_prompt(FALSE) # Mark that a prompt is running.
       chat_instance$chat_async(prompt_text) |>

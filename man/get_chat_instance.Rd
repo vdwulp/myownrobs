@@ -4,14 +4,7 @@
 \alias{get_chat_instance}
 \title{Get the ellmer Chat Instance}
 \usage{
-get_chat_instance(
-  mode,
-  model,
-  project_context,
-  api_url,
-  api_key,
-  available_models
-)
+get_chat_instance(mode, model, project_context, api_key, available_models)
 }
 \arguments{
 \item{mode}{The mode of operation, one of "agent" or "ask".}
@@ -20,8 +13,6 @@ get_chat_instance(
 
 \item{project_context}{The context of the session executing the addin, obtained with
 `get_project_context()`.}
-
-\item{api_url}{The API URL to use for requests.}
 
 \item{api_key}{The API key for MyOwnRobs, obtained with `get_api_key()`.}
 

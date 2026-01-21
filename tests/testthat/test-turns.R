@@ -55,7 +55,7 @@ test_that("turns_to_ui - two turns", {
 test_that("turns_to_ui - three turns, one tool_runner", {
   turns_list <- list(
     list(role = "user", text = "Hi!"),
-    list(role = "tool_runner", text = "run_some_tool"),
+    list(role = "system", text = "run_some_tool"),
     list(role = "assistant", text = "How can I help you?")
   )
   turns <- lapply(turns_list, function(x) ellmer::Turn(x$role, x$text))
@@ -65,7 +65,7 @@ test_that("turns_to_ui - three turns, one tool_runner", {
 test_that("turns_to_ui - three turns, one empty text", {
   turns_list <- list(
     list(role = "user", text = "Hi!"),
-    list(role = "tool_runner", text = list()),
+    list(role = "system", text = list()),
     list(role = "assistant", text = "How can I help you?")
   )
   turns <- lapply(turns_list, function(x) ellmer::Turn(x$role, x$text))

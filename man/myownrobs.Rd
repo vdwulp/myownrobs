@@ -4,13 +4,7 @@
 \alias{myownrobs}
 \title{Launch MyOwnRobs}
 \usage{
-myownrobs(
-  api_url = paste0("https://myownrobs.com/api/v", packageVersion("myownrobs")$major)
-)
-}
-\arguments{
-\item{api_url}{The API URL to use for requests. This parameter is for advanced users who want to
-specify an alternative backend URL and is rarely needed.}
+myownrobs()
 }
 \value{
 No return value. Called for its side effects to launch the MyOwnRobs RStudio addin.

@@ -21,8 +21,6 @@ RoxygenNote: 7.3.3
 Imports:
   ellmer,
   fs,
-  gargle,
-  httr2,
   jsonlite,
   methods,
   promises,
