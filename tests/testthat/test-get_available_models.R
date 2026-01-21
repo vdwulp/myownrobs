@@ -45,6 +45,14 @@ test_that("get_available_models - api_keys no models", {
 
 ### get_ellmer_models
 
+test_that("get_ellmer_models - random failure", {
+  local_mocked_bindings(
+    models_anthropic = function(...) stop("Some random failure"),
+    .package = "myownrobs"
+  )
+  expect_null(get_ellmer_models("anthropic"))
+})
+
 test_that("get_ellmer_models - anthropic", {
   available_models <- list("Model A" = "model-a", "Model A" = "model-b", "Model C" = "model-c")
   local_mocked_bindings(
@@ -65,6 +73,15 @@ test_that("get_ellmer_models - google_gemini", {
     .package = "myownrobs"
   )
   expect_equal(get_ellmer_models("google_gemini"), unlist(available_models))
+})
+
+test_that("get_ellmer_models - ollama", {
+  available_models <- list("Model a" = "model-a", "Model b" = "model-b", "Model c" = "model-c")
+  local_mocked_bindings(
+    models_ollama = function(...) data.frame(id = unlist(available_models)),
+    .package = "myownrobs"
+  )
+  expect_equal(get_ellmer_models("ollama"), unlist(available_models))
 })
 
 test_that("get_ellmer_models - openai", {

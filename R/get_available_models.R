@@ -15,11 +15,11 @@ get_available_models <- function() {
 #' Get Ellmer Models
 #'
 #' @param provider A character string indicating the model provider (e.g., "anthropic",
-#'   "google_gemini", "openai").
+#'   "google_gemini", "ollama", "openai").
 #' @param api_key A character string containing the API key or credentials used to query the
 #'   provider.
 #'
-#' @importFrom ellmer models_anthropic models_google_gemini models_openai
+#' @importFrom ellmer models_anthropic models_google_gemini models_ollama models_openai
 #' @importFrom stats setNames
 #' @importFrom tools toTitleCase
 #'
@@ -27,11 +27,17 @@ get_available_models <- function() {
 #'
 get_ellmer_models <- function(provider, api_key) {
   if (provider == "anthropic") {
-    models <- models_anthropic(api_key = api_key)
+    models <- try(models_anthropic(api_key = api_key), silent = TRUE)
   } else if (provider == "google_gemini") {
-    models <- models_google_gemini(credentials = function() api_key)
+    models <- try(models_google_gemini(credentials = function() api_key), silent = TRUE)
+  } else if (provider == "ollama") {
+    models <- try(models_ollama(credentials = function() api_key), silent = TRUE)
   } else if (provider == "openai") {
-    models <- models_openai(credentials = function() api_key)
+    models <- try(models_openai(credentials = function() api_key), silent = TRUE)
+  }
+  if (inherits(models, "try-error")) {
+    message("Couldn't fetch models for ", provider, ".")
+    return()
   }
   if ("name" %in% colnames(models)) {
     models <- setNames(models$id, models$name)

@@ -2,7 +2,7 @@
 #'
 #' Set API keys for running models locally.
 #'
-#' @param name Name of the provider (one of "anthropic", "google_gemini", or "openai").
+#' @param name Name of the provider (one of "anthropic", "google_gemini", "ollama", or "openai").
 #' @param api_key The provider's API key to use for authentication. If `NULL`, the provider will be
 #'   deleted.
 #'
@@ -12,18 +12,19 @@
 #' configure_provider("anthropic", Sys.getenv("ANTHROPIC_API_KEY"))
 #' configure_provider("google_gemini", Sys.getenv("GEMINI_API_KEY"))
 #' configure_provider("openai", Sys.getenv("OPENAI_API_KEY"))
+#' configure_provider("ollama", Sys.getenv("OLLAMA_API_KEY"))
 #' # Delete the provider for google_gemini.
 #' configure_provider("google_gemini", NULL)
 #' }
 #'
-#' @importFrom ellmer models_anthropic models_google_gemini models_openai
+#' @importFrom ellmer models_anthropic models_google_gemini models_ollama models_openai
 #' @importFrom jsonlite fromJSON toJSON
 #'
 #' @export
 #'
 configure_provider <- function(name, api_key) {
-  if (!name %in% c("anthropic", "google_gemini", "openai")) {
-    stop('`name` must be one of "anthropic", "google_gemini", or "openai".')
+  if (!name %in% c("anthropic", "google_gemini", "ollama", "openai")) {
+    stop('`name` must be one of "anthropic", "google_gemini", "ollama", or "openai".')
   }
   # Load the already configured providers.
   api_keys <- get_config("api_keys")
@@ -40,6 +41,8 @@ configure_provider <- function(name, api_key) {
       models <- try(models_anthropic(api_key = api_key), silent = TRUE)
     } else if (name == "google_gemini") {
       models <- try(models_google_gemini(credentials = function() api_key), silent = TRUE)
+    } else if (name == "ollama") {
+      models <- try(models_ollama(credentials = function() api_key), silent = TRUE)
     } else if (name == "openai") {
       models <- try(models_openai(credentials = function() api_key), silent = TRUE)
     }

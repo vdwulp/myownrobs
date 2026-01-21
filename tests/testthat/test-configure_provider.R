@@ -125,6 +125,58 @@ test_that("configure_provider - google_gemini - delete key", {
   expect_equal(configure_provider("google_gemini", NULL), list(provider = "FAKE_KEY"))
 })
 
+### ollama
+
+test_that("configure_provider - ollama - add key", {
+  local_mocked_bindings(
+    get_config = function(...) NULL,
+    set_config = function(...) NULL,
+    models_ollama = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(configure_provider("ollama", "OL_KEY"), list(ollama = "OL_KEY"))
+})
+
+test_that("configure_provider - ollama - add key to non-empty keys", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY"}',
+    set_config = function(...) NULL,
+    models_ollama = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(
+    configure_provider("ollama", "OL_KEY"),
+    list(provider = "FAKE_KEY", ollama = "OL_KEY")
+  )
+})
+
+test_that("configure_provider - ollama - update key", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY","ollama":"OLD_KEY"}',
+    set_config = function(...) NULL,
+    models_ollama = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(
+    configure_provider("ollama", "OL_KEY"),
+    list(provider = "FAKE_KEY", ollama = "OL_KEY")
+  )
+  expect_equal(
+    configure_provider("ollama", "OL_KEY2"),
+    list(provider = "FAKE_KEY", ollama = "OL_KEY2")
+  )
+})
+
+test_that("configure_provider - ollama - delete key", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY","ollama":"OLD_KEY"}',
+    set_config = function(...) NULL,
+    models_ollama = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(configure_provider("ollama", NULL), list(provider = "FAKE_KEY"))
+})
+
 ### openai
 
 test_that("configure_provider - openai - add key", {
