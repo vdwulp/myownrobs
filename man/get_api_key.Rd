@@ -7,6 +7,6 @@
 get_api_key()
 }
 \description{
-Retrieves the API key for MyOwnRobs from the internal state environment.
+Retrieves the configured AI provider API keys from the user's configuration directory.
 }
 \keyword{internal}

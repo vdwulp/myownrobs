@@ -6,9 +6,10 @@
 #'
 #' @examples
 #' if (interactive()) {
+#'   # Configure your API providers first.
+#'   configure_provider("google_gemini", Sys.getenv("GEMINI_API_KEY"))
+#'   # Then launch MyOwnRobs.
 #'   myownrobs()
-#'   # Specify the API URL.
-#'   myownrobs("https://myownrobs.com/api/v0")
 #' }
 #'
 #' @importFrom shiny runGadget
