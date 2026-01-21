@@ -67,6 +67,15 @@ test_that("get_ellmer_models - google_gemini", {
   expect_equal(get_ellmer_models("google_gemini"), unlist(available_models))
 })
 
+test_that("get_ellmer_models - openai", {
+  available_models <- list("Model a" = "model-a", "Model b" = "model-b", "Model c" = "model-c")
+  local_mocked_bindings(
+    models_openai = function(...) data.frame(id = unlist(available_models)),
+    .package = "myownrobs"
+  )
+  expect_equal(get_ellmer_models("openai"), unlist(available_models))
+})
+
 ### nice_names
 
 test_that("nice_names", {
