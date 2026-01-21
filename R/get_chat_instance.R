@@ -8,6 +8,7 @@
 #' @param available_models List of available models to use.
 #'
 #' @importFrom ellmer chat
+#' @importFrom jsonlite toJSON
 #'
 #' @keywords internal
 #'

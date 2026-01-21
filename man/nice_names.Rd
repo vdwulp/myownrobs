@@ -6,6 +6,9 @@
 \usage{
 nice_names(names)
 }
+\arguments{
+\item{names}{A character vector of names to be converted to a nicer, title-cased form.}
+}
 \description{
 Make Nicer Names
 }

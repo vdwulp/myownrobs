@@ -50,7 +50,7 @@ ai_tool_search_and_replace_in_file <- tool(
         "  * Matching is exact (use literal text). Include any surrounding whitespace/newlines if ",
         "needed to uniquely match.\n",
         "  * Diffs are applied sequentially in array order (top-to-bottom semantics).\n",
-        '  * To perform deletions, set "REPLACE" to an empty string."\n'
+        '  * To perform deletions, set "REPLACE" to an empty string.\n'
       )
     )
   )

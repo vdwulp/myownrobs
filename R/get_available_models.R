@@ -14,6 +14,11 @@ get_available_models <- function() {
 
 #' Get Ellmer Models
 #'
+#' @param provider A character string indicating the model provider (e.g., "anthropic",
+#'   "google_gemini", "openai").
+#' @param api_key A character string containing the API key or credentials used to query the
+#'   provider.
+#'
 #' @importFrom ellmer models_anthropic models_google_gemini models_openai
 #' @importFrom stats setNames
 #' @importFrom tools toTitleCase
@@ -38,6 +43,8 @@ get_ellmer_models <- function(provider, api_key) {
 
 
 #' Make Nicer Names
+#'
+#' @param names A character vector of names to be converted to a nicer, title-cased form.
 #'
 #' @importFrom tools toTitleCase
 #'

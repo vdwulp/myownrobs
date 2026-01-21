@@ -2,7 +2,7 @@
 #'
 #' Set API keys for running models locally.
 #'
-#' @param name Name of the provider (one of "google_gemini" or "anthropic").
+#' @param name Name of the provider (one of "anthropic", "google_gemini", or "openai").
 #' @param api_key The provider's API key to use for authentication. If `NULL`, the provider will be
 #'   deleted.
 #'
