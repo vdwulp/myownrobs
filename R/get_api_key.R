@@ -1,9 +1,16 @@
 #' Get API Key
 #'
-#' Retrieves the API key for MyOwnRobs from the internal state environment.
+#' Retrieves the configured AI provider API keys from the user's configuration directory.
+#'
+#' @importFrom jsonlite fromJSON
 #'
 #' @keywords internal
 #'
 get_api_key <- function() {
-  get("api_key", envir = .state) # Retrieve the 'api_key' from the '.state' environment.
+  api_keys <- get_config("api_keys")
+  if (!is.null(api_keys)) {
+    api_keys <- fromJSON(api_keys)
+    api_keys <- api_keys[order(names(api_keys))]
+  }
+  api_keys
 }
