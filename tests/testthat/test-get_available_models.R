@@ -102,6 +102,18 @@ test_that("get_ellmer_models - openai", {
   expect_equal(get_ellmer_models("openai"), unlist(available_models))
 })
 
+### models_deepseek
+
+test_that("models_deepseek", {
+  available_models <- c("model-a", "model-b", "model-c")
+  local_mocked_bindings(
+    GET = function(...) NULL,
+    content = function(...) list(data = lapply(available_models, function(x) list(id = x))),
+    .package = "myownrobs"
+  )
+  expect_equal(models_deepseek(), data.frame(id = available_models))
+})
+
 ### nice_names
 
 test_that("nice_names", {
