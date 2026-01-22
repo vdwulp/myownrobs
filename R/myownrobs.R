@@ -198,16 +198,16 @@ myownrobs_server <- function(available_models, project_context) {
         input$ai_mode, input$ai_model, project_context, get_api_key(), available_models
       )
       r_finished_prompt(FALSE) # Mark that a prompt is running.
-      chat_instance$chat_async(prompt_text) |>
-        then(
-          r_finished_prompt,
-          function(err) {
-            r_messages(c(list(list(role = "assistant", text = paste0(
-              "Error: ", err$message, ". Retry?"
-            ))), r_messages()))
-            r_finished_prompt(NULL)
-          }
-        )
+      then(
+        chat_instance$chat_async(prompt_text),
+        r_finished_prompt,
+        function(err) {
+          r_messages(c(list(list(role = "assistant", text = paste0(
+            "Error: ", err$message, ". Retry?"
+          ))), r_messages()))
+          r_finished_prompt(NULL)
+        }
+      )
       r_chat_instance(chat_instance)
     }
     observeEvent(input$inputPrompt, send_message(input$inputPrompt))
