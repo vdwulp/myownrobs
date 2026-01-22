@@ -2,7 +2,8 @@
 #'
 #' Set API keys for running models locally.
 #'
-#' @param name Name of the provider (one of "anthropic", "deepseek", "google_gemini", "ollama", or "openai").
+#' @param name Name of the provider (one of "anthropic", "deepseek", "google_gemini", "ollama", or
+#'   "openai").
 #' @param api_key The provider's API key to use for authentication. If `NULL`, the provider will be
 #'   deleted.
 #'

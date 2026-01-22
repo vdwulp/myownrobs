@@ -7,9 +7,10 @@
 get_available_models <- function() {
   api_keys <- get_api_key()
   providers <- setdiff(names(api_keys), "myownrobs")
-  lapply(providers, function(provider) {
+  models <- lapply(providers, function(provider) {
     get_ellmer_models(provider, api_keys[[provider]])
-  }) |> setNames(providers)
+  })
+  setNames(models, providers)
 }
 
 #' Get Ellmer Models
@@ -63,7 +64,8 @@ models_deepseek <- function(credentials = NULL) {
   models <- GET(
     "https://api.deepseek.com/models",
     add_headers(Authorization = paste("Bearer", credentials()))
-  ) |> content(as = "parsed")
+  )
+  models <- content(models, as = "parsed")
   data.frame(id = sapply(models$data, function(x) x$id))
 }
 

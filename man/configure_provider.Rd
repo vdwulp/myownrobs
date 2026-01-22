@@ -7,7 +7,8 @@
 configure_provider(name, api_key)
 }
 \arguments{
-\item{name}{Name of the provider (one of "anthropic", "deepseek", "google_gemini", "ollama", or "openai").}
+\item{name}{Name of the provider (one of "anthropic", "deepseek", "google_gemini", "ollama", or
+"openai").}
 
 \item{api_key}{The provider's API key to use for authentication. If `NULL`, the provider will be
 deleted.}
