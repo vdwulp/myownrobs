@@ -2,8 +2,10 @@ version: 1
 title: MyOwnRobs - Terms of Use
 content: |
   **MyOwnRobs - Data and File Permissions:**
-  * **Configuration:** MyOwnRobs stores its API key in your `~/.Renviron` and other settings in `tools::R_user_dir("myownrobs", "config")`
+  * **Configuration:** MyOwnRobs stores your AI provider API keys and other settings locally in `tools::R_user_dir("myownrobs", "config")`. Your API keys are stored only on your local machine.
+  * **Direct API Communication:** MyOwnRobs connects directly to your selected AI provider (Google Gemini, Anthropic, or OpenAI) using your API key. There is no intermediary MyOwnRobs server.
   * **Agent Mode:** When you select MyOwnRobs's Agent mode, you grant the **AI model you select** the permission to execute R commands and interact with your filesystem (e.g., creating or modifying files).
-  * **Disclaimer:** MyOwnRobs facilitates this process but is not responsible for the actions or consequences of the AI model's code execution. You are solely responsible for actions performed by the Agent.
+  * **Data Sharing:** Your code and prompts are sent directly to your chosen AI provider. Please review your provider's data policies before use.
+  * **Disclaimer:** MyOwnRobs facilitates communication with AI providers but is not responsible for the actions or consequences of the AI model's code execution. You are solely responsible for actions performed by the Agent.
 
-  By using this package, you accept these terms and your LLM provider's terms of service.
+  By using this package, you accept these terms and your AI provider's terms of service.
