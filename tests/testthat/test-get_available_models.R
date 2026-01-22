@@ -66,6 +66,15 @@ test_that("get_ellmer_models - anthropic", {
   expect_equal(get_ellmer_models("anthropic"), unlist(available_models))
 })
 
+test_that("get_ellmer_models - deepseek", {
+  available_models <- list("Model a" = "model-a", "Model b" = "model-b", "Model c" = "model-c")
+  local_mocked_bindings(
+    models_deepseek = function(...) data.frame(id = unlist(available_models)),
+    .package = "myownrobs"
+  )
+  expect_equal(get_ellmer_models("deepseek"), unlist(available_models))
+})
+
 test_that("get_ellmer_models - google_gemini", {
   available_models <- list("Model a" = "model-a", "Model b" = "model-b", "Model c" = "model-c")
   local_mocked_bindings(

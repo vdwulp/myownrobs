@@ -73,6 +73,58 @@ test_that("configure_provider - anthropic - delete key to empty", {
   expect_length(configure_provider("anthropic", NULL), 0)
 })
 
+### deepseek
+
+test_that("configure_provider - deepseek - add key", {
+  local_mocked_bindings(
+    get_config = function(...) NULL,
+    set_config = function(...) NULL,
+    models_deepseek = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(configure_provider("deepseek", "DS_KEY"), list(deepseek = "DS_KEY"))
+})
+
+test_that("configure_provider - deepseek - add key to non-empty keys", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY"}',
+    set_config = function(...) NULL,
+    models_deepseek = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(
+    configure_provider("deepseek", "DS_KEY"),
+    list(provider = "FAKE_KEY", deepseek = "DS_KEY")
+  )
+})
+
+test_that("configure_provider - deepseek - update key", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY","deepseek":"OLD_KEY"}',
+    set_config = function(...) NULL,
+    models_deepseek = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(
+    configure_provider("deepseek", "DS_KEY"),
+    list(provider = "FAKE_KEY", deepseek = "DS_KEY")
+  )
+  expect_equal(
+    configure_provider("deepseek", "DS_KEY2"),
+    list(provider = "FAKE_KEY", deepseek = "DS_KEY2")
+  )
+})
+
+test_that("configure_provider - deepseek - delete key", {
+  local_mocked_bindings(
+    get_config = function(...) '{"provider":"FAKE_KEY","deepseek":"OLD_KEY"}',
+    set_config = function(...) NULL,
+    models_deepseek = function(...) NULL,
+    .package = "myownrobs"
+  )
+  expect_equal(configure_provider("deepseek", NULL), list(provider = "FAKE_KEY"))
+})
+
 ### google_gemini
 
 test_that("configure_provider - google_gemini - add key", {

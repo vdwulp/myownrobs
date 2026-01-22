@@ -7,7 +7,7 @@
 get_ellmer_models(provider, api_key)
 }
 \arguments{
-\item{provider}{A character string indicating the model provider (e.g., "anthropic",
+\item{provider}{A character string indicating the model provider (e.g., "anthropic", "deepseek",
 "google_gemini", "ollama", "openai").}
 
 \item{api_key}{A character string containing the API key or credentials used to query the
