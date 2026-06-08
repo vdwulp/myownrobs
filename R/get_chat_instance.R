@@ -7,7 +7,7 @@
 #' @param api_key The API key for MyOwnRobs, obtained with `get_api_key()`.
 #' @param available_models List of available models to use.
 #'
-#' @importFrom ellmer chat
+#' @importFrom ellmer chat chat_openai_compatible
 #' @importFrom jsonlite toJSON
 #'
 #' @keywords internal
@@ -25,10 +25,17 @@ get_chat_instance <- function(mode, model, project_context, api_key, available_m
   )
   provider <- names(available_models)[sapply(available_models, function(models) model %in% models)]
   api_key <- api_key[[provider]]
-  chat_instance <- chat(
-    paste0(provider, "/", model),
-    credentials = function() api_key, system_prompt = initial_prompt
-  )
+  if (provider == "openai_compatible") {
+    chat_instance <- ellmer::chat_openai_compatible(
+      base_url = api_key$base_url, model = model,
+      credentials = function() api_key$api_key, system_prompt = initial_prompt
+    )
+  } else {
+    chat_instance <- chat(
+      paste0(provider, "/", model),
+      credentials = function() api_key, system_prompt = initial_prompt
+    )
+  }
   chat_instance$register_tools(get_llm_tools(mode))
   chat_instance$set_turns(load_turns())
   chat_instance
