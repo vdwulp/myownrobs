@@ -16,7 +16,7 @@ get_available_models <- function() {
 #' Get Ellmer Models
 #'
 #' @param provider A character string indicating the model provider (e.g., "anthropic", "deepseek",
-#'   "google_gemini", "ollama", "openai").
+#'   "google_gemini", "ollama", "openai", "openai_compatible").
 #' @param api_key A character string containing the API key or credentials used to query the
 #'   provider.
 #'
@@ -37,6 +37,9 @@ get_ellmer_models <- function(provider, api_key) {
     models <- try(models_ollama(credentials = function() api_key), silent = TRUE)
   } else if (provider == "openai") {
     models <- try(models_openai(credentials = function() api_key), silent = TRUE)
+  } else if (provider == "openai_compatible") {
+    models <- try(models_openai(base_url = api_key$base_url,
+                                credentials = function() api_key$api_key), silent = TRUE)
   }
   if (inherits(models, "try-error")) {
     message("Couldn't fetch models for ", provider, ".")
