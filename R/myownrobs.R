@@ -30,51 +30,77 @@ myownrobs <- function() {
   }
   validate_credentials()
 
-  # Start the IPC listener in the main session (non-blocking).
-  start_ipc_listener()
-
-  # Parameters for background process
   available_models <- get_available_models()
-  project_context <- get_project_context()
-  port <- httpuv::randomPort()
-  url  <- paste0("http://127.0.0.1:", port)
+  project_context  <- get_project_context()
+  port             <- httpuv::randomPort()
+  ipc_dir_path     <- ipc_dir()
 
-  # Clean up any leftover IPC files from a previous run.
   invisible(lapply(
-    c(ipc_request_path(), ipc_response_path()),
+    c(ipc_request_path(), ipc_response_path(), ipc_url_path()),
     function(f) if (file.exists(f)) file.remove(f)
   ))
 
-  # Start background process
+  start_ipc_listener()
+
   proc <- callr::r_bg(
-    func = function(port, available_models, project_context) {
+    func = function(port, available_models, project_context, ipc_dir_path) {
       library(myownrobs)
       library(shiny)
+
+      ipc_call <- function(action, params = list()) {
+        req_path  <- file.path(ipc_dir_path, "request.json")
+        resp_path <- file.path(ipc_dir_path, "response.json")
+        jsonlite::write_json(list(action = action, params = params), req_path, auto_unbox = TRUE)
+        deadline <- Sys.time() + 20
+        while (Sys.time() < deadline) {
+          if (file.exists(resp_path)) {
+            result <- jsonlite::read_json(resp_path, simplifyVector = FALSE)
+            file.remove(resp_path)
+            if (!is.null(result$error)) stop(result$error)
+            return(result$value)
+          }
+          Sys.sleep(0.05)
+        }
+        stop("IPC timeout waiting for: ", action)
+      }
+
       shiny::runApp(
         shiny::shinyApp(
           myownrobs:::myownrobs_ui(available_models),
           myownrobs:::myownrobs_server(available_models, project_context)
         ),
-        host = "127.0.0.1",
-        port = port,
-        launch.browser = FALSE,
+        host           = "127.0.0.1",
+        port           = port,
+        launch.browser = function(url) {
+          writeLines(url, file.path(ipc_dir_path, "myownrobs_url.txt"))
+        },
         quiet = TRUE
       )
     },
     args = list(
       port             = port,
       available_models = available_models,
-      project_context  = project_context
+      project_context  = project_context,
+      ipc_dir_path     = ipc_dir_path
     ),
     supervise = TRUE,
-    stdout = "|",
-    stderr = "|"
+    stdout    = "|",
+    stderr    = "|"
   )
 
   .myownrobs_state$proc <- proc
 
-  # Open the viewer pane.
-  rstudioapi::viewer(url)
+  deadline <- Sys.time() + 10
+  while (Sys.time() < deadline) {
+    if (file.exists(ipc_url_path())) {
+      url <- readLines(ipc_url_path(), warn = FALSE)
+      file.remove(ipc_url_path())
+      rstudioapi::viewer(url)
+      break
+    }
+    Sys.sleep(0.1)
+  }
+
   invisible()
 }
 
