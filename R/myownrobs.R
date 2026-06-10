@@ -228,13 +228,16 @@ myownrobs_server <- function(available_models, project_context) {
     r_chat_instance <- reactiveVal() # The last used chat instance.
     set_initial_project()
 
-    # Switch to dark mode if applicable AND client is connected.
-    session$onFlushed(function() {
-      later::later(function() {
-        theme <- ipc_call("getThemeInfo")
-        session$sendCustomMessage("setDarkMode", isTRUE(theme$dark))
-      }, delay = 0.5)
-    }, once = TRUE)
+    # Switching to dark mode if applicable.
+    r_dark_mode_set <- reactiveVal(FALSE)
+    dark_mode_timer <- reactiveTimer(200)
+    observeEvent(dark_mode_timer(), {
+      if (r_dark_mode_set()) return()
+      theme <- ipc_call("getThemeInfo")
+      message(capture.output(str(theme)))
+      session$sendCustomMessage("setDarkMode", isTRUE(theme$dark))
+      r_dark_mode_set(TRUE)
+    })
 
     # Reset the chat session when the reset button is clicked.
     # Generates a new chat ID and clears messages and running prompt.
