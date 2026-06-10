@@ -1,3 +1,7 @@
+# Mutable package-level state. Using a dedicated environment because the package
+# namespace is locked after installation and cannot be written to directly.
+.myownrobs_state <- new.env(parent = emptyenv())
+
 #' Launch MyOwnRobs
 #'
 #' Open the RStudio addin with the chat interface.
@@ -12,7 +16,9 @@
 #'   myownrobs()
 #' }
 #'
-#' @importFrom shiny runGadget
+#' @importFrom callr r_bg
+#' @importFrom later later
+#' @importFrom rstudioapi viewer
 #' @importFrom utils packageVersion
 #'
 #' @export
@@ -24,10 +30,48 @@ myownrobs <- function() {
   validate_credentials()
   available_models <- get_available_models()
   project_context <- get_project_context()
-  runGadget(
-    myownrobs_ui(available_models),
-    myownrobs_server(available_models, project_context)
+
+  # Clean up any leftover IPC files from a previous run.
+  invisible(lapply(
+    c(ipc_request_path(), ipc_response_path()),
+    function(f) if (file.exists(f)) file.remove(f)
+  ))
+
+  port <- sample(49152L:65535L, 1L)
+  url  <- paste0("http://127.0.0.1:", port)
+
+  proc <- callr::r_bg(
+    func = function(port, available_models, project_context) {
+      library(myownrobs)
+      library(shiny)
+      shiny::runApp(
+        shiny::shinyApp(
+          myownrobs:::myownrobs_ui(available_models),
+          myownrobs:::myownrobs_server(available_models, project_context)
+        ),
+        host = "127.0.0.1",
+        port = port,
+        launch.browser = FALSE,
+        quiet = TRUE
+      )
+    },
+    args = list(
+      port             = port,
+      available_models = available_models,
+      project_context  = project_context
+    ),
+    supervise = TRUE,
+    stdout = "|",
+    stderr = "|"
   )
+
+  .myownrobs_state$proc <- proc
+
+  # Start the IPC listener in the main session (non-blocking).
+  start_ipc_listener()
+
+  # Open the viewer pane.
+  rstudioapi::viewer(url)
   invisible()
 }
 
@@ -37,7 +81,6 @@ myownrobs <- function() {
 #'
 #' @param available_models List of available models to use.
 #'
-#' @importFrom rstudioapi getThemeInfo
 #' @importFrom shiny actionButton div icon includeCSS selectInput span tagList tags textAreaInput
 #' @importFrom shiny uiOutput
 #'
@@ -54,7 +97,7 @@ myownrobs_ui <- function(available_models) {
     includeCSS(system.file("app", "style.css", package = "myownrobs")),
     tags$script(paste0(
       "document.documentElement.classList.toggle('dark', ",
-      tolower(isTRUE(getThemeInfo()$dark)),
+      tolower(isTRUE(ipc_call("getThemeInfo")$dark)),
       ");"
     )),
     # On focus in prompt input and Enter hit, send the message.
