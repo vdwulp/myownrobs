@@ -1,10 +1,13 @@
-#' @importFrom rstudioapi documentOpen getSourceEditorContext insertText
 edit_existing_file <- function(filepath, changes) {
   if (filepath == "ACTIVE_R_DOCUMENT") {
-    insertText(c(0, 0, Inf, Inf), changes, getSourceEditorContext()$id)
+    ipc_call("insertText", list(
+      location = c(0, 0, Inf, Inf),
+      text     = changes,
+      id       = ipc_call("getSourceEditorContext")$id
+    ))
   } else {
     writeLines(changes, filepath)
-    documentOpen(filepath)
+    ipc_call("documentOpen", list(path = filepath))
   }
   list(output = "")
 }
