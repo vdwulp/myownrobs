@@ -47,22 +47,7 @@ myownrobs <- function() {
       library(myownrobs)
       library(shiny)
 
-      ipc_call <- function(action, params = list()) {
-        req_path  <- file.path(ipc_dir_path, "request.json")
-        resp_path <- file.path(ipc_dir_path, "response.json")
-        jsonlite::write_json(list(action = action, params = params), req_path, auto_unbox = TRUE)
-        deadline <- Sys.time() + 20
-        while (Sys.time() < deadline) {
-          if (file.exists(resp_path)) {
-            result <- jsonlite::read_json(resp_path, simplifyVector = FALSE)
-            file.remove(resp_path)
-            if (!is.null(result$error)) stop(result$error)
-            return(result$value)
-          }
-          Sys.sleep(0.05)
-        }
-        stop("IPC timeout waiting for: ", action)
-      }
+      Sys.setenv(MYOWNROBS_IPC_DIR = ipc_dir_path)
 
       shiny::runApp(
         shiny::shinyApp(
