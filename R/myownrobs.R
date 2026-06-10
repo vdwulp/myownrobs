@@ -115,12 +115,11 @@ myownrobs_ui <- function(available_models) {
     ),
     # Include a single stylesheet that contains both light and dark variables.
     includeCSS(system.file("app", "style.css", package = "myownrobs")),
-    tags$script(
-      'Shiny.addCustomMessageHandler("setDarkMode", function(dark) {
-        document.documentElement.classList.toggle("dark", dark);
-      });'
-    ),
-    # On focus in prompt input and Enter hit, send the message.
+    tags$script(paste0(
+      "document.documentElement.classList.toggle('dark', ",
+      tolower(isTRUE(ipc_call("getThemeInfo")$dark)),
+      ");"
+    )),    # On focus in prompt input and Enter hit, send the message.
     tags$script(
       '
       $(document).on("keydown", "#prompt", function(e) {
@@ -227,17 +226,6 @@ myownrobs_server <- function(available_models, project_context) {
     r_finished_prompt <- reactiveVal(NULL)
     r_chat_instance <- reactiveVal() # The last used chat instance.
     set_initial_project()
-
-    # Switching to dark mode if applicable.
-    r_dark_mode_set <- reactiveVal(FALSE)
-    dark_mode_timer <- reactiveTimer(200)
-    observeEvent(dark_mode_timer(), {
-      if (r_dark_mode_set()) return()
-      theme <- ipc_call("getThemeInfo")
-      message(capture.output(str(theme)))
-      session$sendCustomMessage("setDarkMode", isTRUE(theme$dark))
-      r_dark_mode_set(TRUE)
-    })
 
     # Reset the chat session when the reset button is clicked.
     # Generates a new chat ID and clears messages and running prompt.
