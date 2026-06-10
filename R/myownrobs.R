@@ -43,7 +43,7 @@ myownrobs <- function() {
   start_ipc_listener()
 
   proc <- callr::r_bg(
-    func = function(port, available_models, project_context) {
+    func = function(available_models, project_context) {
       library(myownrobs)
       library(shiny)
 
@@ -55,16 +55,14 @@ myownrobs <- function() {
         host           = "127.0.0.1",
         port           = httpuv::randomPort(),
         launch.browser = function(url) {
-          writeLines(url, file.path(ipc_dir_path, "myownrobs_url.txt"))
+          writeLines(url, ipc_url_path())
         },
         quiet = TRUE
       )
     },
     args = list(
-      port             = port,
       available_models = available_models,
-      project_context  = project_context,
-      ipc_dir_path     = ipc_dir_path
+      project_context  = project_context
     ),
     supervise = TRUE,
     stdout    = "|",
