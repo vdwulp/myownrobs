@@ -90,11 +90,11 @@ start_ipc_listener <- function() {
           "getThemeInfo" = {
             t <- rstudioapi::getThemeInfo()
             list(
-              name       = t$name,
+              editor = t$editor,
+              global = t$global,
+              dark = t$dark,
               foreground = t$foreground,
-              background = t$background,
-              isDark     = t$isDark,
-              dark       = t$isDark
+              background = t$background
             )
           },
           "documentOpen" = {
