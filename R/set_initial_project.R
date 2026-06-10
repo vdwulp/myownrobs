@@ -6,12 +6,11 @@
 #'   store in R's temp dir.
 #'
 #' @importFrom fs dir_create dir_delete dir_exists
-#' @importFrom rstudioapi getActiveProject
 #'
 #' @keywords internal
 #'
 set_initial_project <- function(restore = FALSE) {
-  active_project <- getActiveProject()
+  active_project <- ipc_call("getActiveProject")
   if (is.null(active_project)) {
     return()
   }
