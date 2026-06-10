@@ -32,8 +32,8 @@ myownrobs <- function() {
 
   available_models <- get_available_models()
   project_context  <- get_project_context()
-  port             <- httpuv::randomPort()
-  ipc_dir_path     <- ipc_dir()
+  
+  Sys.setenv(MYOWNROBS_IPC_DIR = ipc_dir())
 
   invisible(lapply(
     c(ipc_request_path(), ipc_response_path(), ipc_url_path()),
@@ -43,11 +43,9 @@ myownrobs <- function() {
   start_ipc_listener()
 
   proc <- callr::r_bg(
-    func = function(port, available_models, project_context, ipc_dir_path) {
+    func = function(port, available_models, project_context) {
       library(myownrobs)
       library(shiny)
-
-      Sys.setenv(MYOWNROBS_IPC_DIR = ipc_dir_path)
 
       shiny::runApp(
         shiny::shinyApp(
@@ -55,7 +53,7 @@ myownrobs <- function() {
           myownrobs:::myownrobs_server(available_models, project_context)
         ),
         host           = "127.0.0.1",
-        port           = port,
+        port           = httpuv::randomPort(),
         launch.browser = function(url) {
           writeLines(url, file.path(ipc_dir_path, "myownrobs_url.txt"))
         },
