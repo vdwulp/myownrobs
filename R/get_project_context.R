@@ -4,8 +4,6 @@
 #' includes details about the working directory, RStudio project, source editor context, and
 #' operating system.
 #'
-#' @importFrom rstudioapi getActiveProject getSourceEditorContext
-#'
 #' @keywords internal
 #'
 get_project_context <- function() {
