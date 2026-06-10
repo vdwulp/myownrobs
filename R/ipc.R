@@ -27,7 +27,7 @@ ipc_call <- function(action, params = list()) {
 
   jsonlite::write_json(list(action = action, params = params), req_path, auto_unbox = TRUE)
 
-  deadline <- Sys.time() + 5
+  deadline <- Sys.time() + 20
   while (Sys.time() < deadline) {
     if (file.exists(resp_path)) {
       result <- jsonlite::read_json(resp_path, simplifyVector = FALSE)
