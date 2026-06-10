@@ -1,8 +1,7 @@
-#' @importFrom rstudioapi documentOpen
 create_new_file <- function(filepath, content) {
   dir.create(dirname(filepath), recursive = TRUE, showWarnings = FALSE)
   writeLines(content, filepath)
-  documentOpen(filepath)
+  ipc_call("documentOpen", list(path = filepath))
   list(output = "")
 }
 
