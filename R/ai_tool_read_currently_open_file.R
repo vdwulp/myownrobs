@@ -1,6 +1,5 @@
-#' @importFrom rstudioapi getSourceEditorContext
 read_currently_open_file <- function() {
-  context <- getSourceEditorContext()
+  context <- ipc_call("getSourceEditorContext")
   if (is.null(context)) {
     return(list(filepath = "NO CURRENT FILE", content = "There are no files currently open."))
   }
