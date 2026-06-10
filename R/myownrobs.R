@@ -29,12 +29,18 @@ myownrobs <- function() {
     return("Accept MyOwnRobs terms of use in order to run it")
   }
   validate_credentials()
-
   available_models <- get_available_models()
   project_context  <- get_project_context()
   
   Sys.setenv(MYOWNROBS_IPC_DIR = ipc_dir())
 
+  # Kill any previous instance
+  if (!is.null(.myownrobs_state$proc) && .myownrobs_state$proc$is_alive()) {
+    message("[myownrobs] Stopping previous instance (PID ", .myownrobs_state$proc$get_pid(), ")...")
+    .myownrobs_state$proc$kill()
+    Sys.sleep(0.3)
+  }
+  
   invisible(lapply(
     c(ipc_request_path(), ipc_response_path(), ipc_url_path()),
     function(f) if (file.exists(f)) file.remove(f)
@@ -42,6 +48,7 @@ myownrobs <- function() {
 
   start_ipc_listener()
 
+  message("[myownrobs] Starting background process...")
   proc <- callr::r_bg(
     func = function(available_models, project_context) {
       library(myownrobs)
@@ -70,12 +77,15 @@ myownrobs <- function() {
   )
 
   .myownrobs_state$proc <- proc
+  message("[myownrobs] Background PID: ", proc$get_pid())
 
+  message("[myownrobs] Waiting for app...")
   deadline <- Sys.time() + 10
   while (Sys.time() < deadline) {
     if (file.exists(ipc_url_path())) {
       url <- readLines(ipc_url_path(), warn = FALSE)
       file.remove(ipc_url_path())
+      message("[myownrobs] Opening viewer: ", url)
       rstudioapi::viewer(url)
       break
     }
@@ -105,12 +115,11 @@ myownrobs_ui <- function(available_models) {
     ),
     # Include a single stylesheet that contains both light and dark variables.
     includeCSS(system.file("app", "style.css", package = "myownrobs")),
-    tags$script(paste0(
-      "document.documentElement.classList.toggle('dark', ",
-      #tolower(isTRUE(ipc_call("getThemeInfo")$dark)),
-      tolower(FALSE),
-      ");"
-    )),
+    tags$script(
+      'Shiny.addCustomMessageHandler("setDarkMode", function(dark) {
+        document.documentElement.classList.toggle("dark", dark);
+      });'
+    ),
     # On focus in prompt input and Enter hit, send the message.
     tags$script(
       '
@@ -218,6 +227,12 @@ myownrobs_server <- function(available_models, project_context) {
     r_finished_prompt <- reactiveVal(NULL)
     r_chat_instance <- reactiveVal() # The last used chat instance.
     set_initial_project()
+
+    session$onFlushed(function() {
+      theme  <- ipc_call("getThemeInfo")
+      is_dark <- isTRUE(theme$dark)
+      session$sendCustomMessage("setDarkMode", is_dark)
+    }, once = TRUE)
 
     # Reset the chat session when the reset button is clicked.
     # Generates a new chat ID and clears messages and running prompt.
