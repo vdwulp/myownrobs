@@ -13,6 +13,7 @@ ipc_dir <- function() {
 
 ipc_request_path <- function() file.path(ipc_dir(), "request.json")
 ipc_response_path <- function() file.path(ipc_dir(), "response.json")
+ipc_url_path <- function() file.path(ipc_dir(), "myownrobs_url.txt")
 
 # --- Background process: call main session via IPC ---------------------------
 
