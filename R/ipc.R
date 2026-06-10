@@ -6,6 +6,8 @@
 # --- Path helpers ------------------------------------------------------------
 
 ipc_dir <- function() {
+  env <- Sys.getenv("MYOWNROBS_IPC_DIR", unset = "")
+  if (nzchar(env)) return(env)
   d <- file.path(tempdir(), "myownrobs_ipc")
   dir.create(d, showWarnings = FALSE)
   d
