@@ -229,11 +229,12 @@ myownrobs_server <- function(available_models, project_context) {
     set_initial_project()
 
     # Switch to dark mode if applicable AND client is connected.
-    observe({
-      theme <- ipc_call("getThemeInfo")
-      is_dark <- isTRUE(theme$dark)
-      session$sendCustomMessage("setDarkMode", is_dark)
-    }) |> bindEvent(session$clientData$url_hostname, ignoreNULL = TRUE, once = TRUE)
+    session$onFlushed(function() {
+      later::later(function() {
+        theme <- ipc_call("getThemeInfo")
+        session$sendCustomMessage("setDarkMode", isTRUE(theme$dark))
+      }, delay = 0.5)
+    }, once = TRUE)
 
     # Reset the chat session when the reset button is clicked.
     # Generates a new chat ID and clears messages and running prompt.
