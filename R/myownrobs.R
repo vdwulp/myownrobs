@@ -55,7 +55,7 @@ myownrobs <- function() {
         host           = "127.0.0.1",
         port           = httpuv::randomPort(),
         launch.browser = function(url) {
-          writeLines(url, ipc_url_path())
+          writeLines(url, myownrobs:::ipc_url_path())
         },
         quiet = TRUE
       )
