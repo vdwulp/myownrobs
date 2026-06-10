@@ -5,6 +5,7 @@
 
 # --- Path helpers ------------------------------------------------------------
 
+#' @keywords internal
 ipc_dir <- function() {
   env <- Sys.getenv("MYOWNROBS_IPC_DIR", unset = "")
   if (nzchar(env)) return(env)
@@ -13,8 +14,13 @@ ipc_dir <- function() {
   d
 }
 
+#' @keywords internal
 ipc_request_path <- function() file.path(ipc_dir(), "request.json")
+
+#' @keywords internal
 ipc_response_path <- function() file.path(ipc_dir(), "response.json")
+
+#' @keywords internal
 ipc_url_path <- function() file.path(ipc_dir(), "myownrobs_url.txt")
 
 # --- Background process: call main session via IPC ---------------------------
@@ -30,7 +36,7 @@ ipc_call <- function(action, params = list()) {
 
   jsonlite::write_json(list(action = action, params = params), req_path, auto_unbox = TRUE)
 
-  deadline <- Sys.time() + 20
+  deadline <- Sys.time() + 5
   while (Sys.time() < deadline) {
     if (file.exists(resp_path)) {
       result <- jsonlite::read_json(resp_path, simplifyVector = FALSE)
