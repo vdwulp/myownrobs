@@ -17,6 +17,7 @@
 #' }
 #'
 #' @importFrom callr r_bg
+#' @importFrom httpuv randomPort
 #' @importFrom later later
 #' @importFrom rstudioapi viewer
 #' @importFrom utils packageVersion
@@ -37,7 +38,7 @@ myownrobs <- function() {
     function(f) if (file.exists(f)) file.remove(f)
   ))
 
-  port <- sample(49152L:65535L, 1L)
+  port <- httpuv::randomPort()
   url  <- paste0("http://127.0.0.1:", port)
 
   proc <- callr::r_bg(
