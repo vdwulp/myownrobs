@@ -111,8 +111,7 @@ myownrobs_ui <- function(available_models) {
     includeCSS(system.file("app", "style.css", package = "myownrobs")),
     tags$script(paste0(
       "document.documentElement.classList.toggle('dark', ",
-      #tolower(isTRUE(ipc_call("getThemeInfo")$dark)),
-      tolower(FALSE),
+      tolower(isTRUE(ipc_call("getThemeInfo")$dark)),
       ");"
     )),
     # On focus in prompt input and Enter hit, send the message.
