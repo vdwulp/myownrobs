@@ -29,8 +29,15 @@ myownrobs <- function() {
     return("Accept MyOwnRobs terms of use in order to run it")
   }
   validate_credentials()
+
+  # Start the IPC listener in the main session (non-blocking).
+  start_ipc_listener()
+
+  # Parameters for background process
   available_models <- get_available_models()
   project_context <- get_project_context()
+  port <- httpuv::randomPort()
+  url  <- paste0("http://127.0.0.1:", port)
 
   # Clean up any leftover IPC files from a previous run.
   invisible(lapply(
@@ -38,9 +45,7 @@ myownrobs <- function() {
     function(f) if (file.exists(f)) file.remove(f)
   ))
 
-  port <- httpuv::randomPort()
-  url  <- paste0("http://127.0.0.1:", port)
-
+  # Start background process
   proc <- callr::r_bg(
     func = function(port, available_models, project_context) {
       library(myownrobs)
@@ -67,9 +72,6 @@ myownrobs <- function() {
   )
 
   .myownrobs_state$proc <- proc
-
-  # Start the IPC listener in the main session (non-blocking).
-  start_ipc_listener()
 
   # Open the viewer pane.
   rstudioapi::viewer(url)
