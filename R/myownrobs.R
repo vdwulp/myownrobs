@@ -230,10 +230,8 @@ myownrobs_server <- function(available_models, project_context) {
 
     # Switch session to dark mode if applicable.
     session$onFlushed(function() {
-      later::later(function() {
-        theme <- ipc_call("getThemeInfo")
-        session$sendCustomMessage("setDarkMode", isTRUE(theme$dark))
-      }, delay = 0.5)
+      theme <- ipc_call("getThemeInfo")
+      session$sendCustomMessage("setDarkMode", isTRUE(theme$dark))
     }, once = TRUE)
 
     # Reset the chat session when the reset button is clicked.
