@@ -213,7 +213,7 @@ myownrobs_ui <- function(available_models) {
 #' @importFrom jsonlite fromJSON toJSON
 #' @importFrom promises then
 #' @importFrom shiny div h3 markdown observeEvent p reactive reactiveTimer reactiveVal renderUI req
-#' @importFrom shiny stopApp tags updateTextAreaInput
+#' @importFrom shiny showNotification stopApp tags updateTextAreaInput
 #' @importFrom uuid UUIDgenerate
 #'
 #' @keywords internal
@@ -230,8 +230,16 @@ myownrobs_server <- function(available_models, project_context) {
 
     # Switch session to dark mode if applicable.
     session$onFlushed(function() {
-      theme <- ipc_call("getThemeInfo")
-      session$sendCustomMessage("setDarkMode", isTRUE(theme$dark))
+      tryCatch({ # Catch IPC-error. Ellmer catches IPC-errors in tools.
+        theme <- ipc_call("getThemeInfo")
+        session$sendCustomMessage("setDarkMode", isTRUE(theme$dark))
+      }, error = function(e) {
+        shiny::showNotification(
+          "Could not detect IDE theme, defaulting to light mode.",
+          type = "warning",
+          duration = 5
+        )
+      })
     }, once = TRUE)
 
     # Reset the chat session when the reset button is clicked.
