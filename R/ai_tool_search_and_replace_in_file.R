@@ -1,8 +1,7 @@
 #' @importFrom jsonlite fromJSON
-#' @importFrom rstudioapi documentOpen getSourceEditorContext insertText
 search_and_replace_in_file <- function(filepath, diffs) {
   if (filepath == "ACTIVE_R_DOCUMENT") {
-    editor_context <- getSourceEditorContext()
+    editor_context <- ipc_call("getSourceEditorContext")
     file_content <- paste(editor_context$contents, collapse = "\n")
   } else {
     file_content <- paste(readLines(filepath), collapse = "\n")
@@ -14,10 +13,14 @@ search_and_replace_in_file <- function(filepath, diffs) {
     file_content <- sub(diff$SEARCH, diff$REPLACE, file_content, fixed = TRUE)
   }
   if (filepath == "ACTIVE_R_DOCUMENT") {
-    insertText(c(0, 0, Inf, Inf), file_content, editor_context$id)
+    ipc_call("insertText", list(
+      location = c(0, 0, Inf, Inf),
+      text = file_content,
+      id = editor_context$id
+    ))
   } else {
     writeLines(file_content, filepath)
-    documentOpen(filepath)
+    ipc_call("documentOpen", list(path = filepath))
   }
   list(new_content = file_content)
 }
