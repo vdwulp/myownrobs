@@ -1,7 +1,6 @@
 #' @importFrom fs dir_ls
-#' @importFrom rstudioapi getActiveProject
 file_glob_search <- function(pattern) {
-  matched_files <- dir_ls(getActiveProject(), glob = pattern, recurse = TRUE, type = "file")
+  matched_files <- dir_ls(ipc_call("getActiveProject"), glob = pattern, recurse = TRUE, type = "file")
   matches <- paste(matched_files, collapse = "\n")
   list(output = matches)
 }
